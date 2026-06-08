@@ -5,7 +5,7 @@
 //
 // root/
 // ├── items/
-// 		 ├── [id].html
+//     ├── [id].html
 //     ├── index.html
 // ├── index.html
 // ├── layout.html
@@ -52,35 +52,6 @@ type Pages struct {
 
 	Root *PageGroup
 }
-
-// func (p *Pages) FindPage(path string) *Page {
-// 	return findRecursive(p.Root, path)
-// }
-
-// func findRecursive(group *PageGroup, path string) *Page {
-// 	var found *Page
-// 	for _, p := range group.Pages {
-// 		if p.Path == path {
-// 			found = p
-
-// 			break
-// 		}
-// 	}
-
-// 	if found != nil {
-// 		return found
-// 	}
-
-// 	for _, gp := range group.Groups {
-// 		found = findRecursive(gp, path)
-
-// 		if found != nil {
-// 			break
-// 		}
-// 	}
-
-// 	return found
-// }
 
 func NewPages() *Pages {
 	return NewPagesWithPros(&PagesProps{
@@ -305,8 +276,4 @@ func (p *Pages) LoadDefault(root *template.Template, path string) *template.Temp
 	}
 
 	return tpl
-
-	// // TODO temp
-	// toimplement, _ := template.New("to_implement").Parse("Need to implement")
-	// return toimplement
 }
