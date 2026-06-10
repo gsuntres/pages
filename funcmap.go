@@ -4,12 +4,22 @@ import (
 	"html/template"
 	"encoding/json"
 	"log"
+	"sync"
 )
-
-var funcMap template.FuncMap = template.FuncMap{}
+var mu sync.RWMutex
+var funcMap = template.FuncMap{}
 
 func AddFunc(name string, fn any) {
+	mu.Lock()
+	defer mu.Unlock()
 	funcMap[name] = fn
+}
+
+func GetFuncMap() template.FuncMap {
+	mu.RLock()
+	defer mu.RUnlock()
+	
+	return funcMap
 }
 
 func init() {

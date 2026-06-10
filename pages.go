@@ -257,7 +257,7 @@ func (p *Pages) loadTemplate(path string) *template.Template {
 
 	q := fullpath.Query()
 
-	root := template.New(path).Funcs(funcMap)
+	root := template.New(path).Funcs(GetFuncMap())
 
 	page := fullpath.Path
 	layout := q.Get("layout")
