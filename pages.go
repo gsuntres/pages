@@ -20,6 +20,7 @@ import (
 	"os"
 	"log"
 	"slices"
+	"strings"
 	"net/url"
 	"html/template"
 	"path/filepath"
@@ -310,7 +311,11 @@ func (p *Pages) LoadLocal(path string, filenames... string) *template.Template {
 
 	tpl := template.New(path)
 
-	for _, fl := range filenames {
+	usable := slices.DeleteFunc(filenames, func(n string) bool {
+		return strings.TrimSpace(n) == ""
+	})
+
+	for _, fl := range usable {
 		fullPath := filepath.Join(p.Pages, fl)
 		log.Printf("-> %s", fullPath)
 		data, err := os.ReadFile(fullPath)

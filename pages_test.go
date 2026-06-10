@@ -79,3 +79,31 @@ func TestInstance(t *testing.T) {
 		t.Error("Unexpected rendered html")
 	}
 }
+
+func TestInstanceNoLayout(t *testing.T) {
+	pages := NewPagesWithProps(&PagesProps{
+		Mode: ModeLocal,
+		Pages: ".test/root",
+	})
+	
+	ren := pages.Instance("simple.html", map[string]any{"foo": "bar"})
+	h, ok := ren.(render.HTML)
+	if !ok {
+		t.Fatal("Failed to convert to render.HTML")
+	}
+
+	var out bytes.Buffer
+	err := h.Template.Execute(&out, h.Data)
+	if err != nil {
+		t.Fatalf("Failed to execute template %v", err)
+	}
+
+	body := out.String()
+
+	expected := commons.StringNormalize("<b>INDEX PAGE</b>")
+	actual := commons.StringNormalize(body)
+
+	if actual != expected {
+		t.Error("Unexpected rendered html")
+	}
+}
