@@ -317,7 +317,6 @@ func (p *Pages) LoadLocal(path string, filenames... string) *template.Template {
 
 	for _, fl := range usable {
 		fullPath := filepath.Join(p.Pages, fl)
-		log.Printf("-> %s", fullPath)
 		data, err := os.ReadFile(fullPath)
 		if err != nil {
 			log.Fatalf("failed to load template: %v", err)
