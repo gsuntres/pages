@@ -12,7 +12,7 @@ import (
 	"git.gsuntres.com/gsuntres/pkg/commons"
 )
 
-func setupRouter() *gin.Engine {
+func setupRouterDefaultMode() *gin.Engine {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
 
@@ -34,7 +34,7 @@ func setupRouter() *gin.Engine {
 func TestRootIndex(t *testing.T) {
 	w := httptest.NewRecorder()
 
-	r := setupRouter()
+	r := setupRouterDefaultMode()
 
 	req, err := http.NewRequest("GET", "/", nil)
 	if err != nil {
@@ -65,7 +65,7 @@ func TestRootIndex(t *testing.T) {
 func TestRoute(t *testing.T) {
 	w := httptest.NewRecorder()
 
-	r := setupRouter()
+	r := setupRouterDefaultMode()
 
 	req, err := http.NewRequest("GET", "/group1", nil)
 	if err != nil {
@@ -96,7 +96,7 @@ func TestRoute(t *testing.T) {
 func TestRouteWithId(t *testing.T) {
 	w := httptest.NewRecorder()
 
-	r := setupRouter()
+	r := setupRouterDefaultMode()
 
 	req, err := http.NewRequest("GET", "/group1/1", nil)
 	if err != nil {
@@ -118,7 +118,7 @@ func TestRouteWithId(t *testing.T) {
 
 	expected := commons.StringNormalize(expectedBody)
 	actual := commons.StringNormalize(response)
-
+	
 	if actual != expected {
 		t.Error("Unexpected rendered html")
 	}
@@ -127,7 +127,7 @@ func TestRouteWithId(t *testing.T) {
 func TestDeepRoute(t *testing.T) {
 	w := httptest.NewRecorder()
 
-	r := setupRouter()
+	r := setupRouterDefaultMode()
 
 	req, err := http.NewRequest("GET", "/l1/l2/l3", nil)
 	if err != nil {
@@ -155,3 +155,14 @@ func TestDeepRoute(t *testing.T) {
 	}
 }
 
+func setupRouterLocal() *gin.Engine {
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	instance := NewPagesWithProps(&PagesProps{
+		Mode: ModeLocal,
+	})
+
+	r.HTMLRender = instance
+
+	return r
+}

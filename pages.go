@@ -22,9 +22,12 @@ import (
 	"slices"
 	"net/url"
 	"html/template"
+	"path/filepath"
 		
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
+
+	"git.gsuntres.com/gsuntres/pkg/sys"
 )
 
 var tplhtml map[string]*template.Template
@@ -51,18 +54,41 @@ type Pages struct {
 	notFound *template.Template
 
 	Root *PageGroup
+
+	// Pages directory where templates are located (default: pages)
+	Pages string
+}
+
+// Count the number templates
+func (p *Pages) Count() int {
+	return len(p.templates)
 }
 
 func NewPages() *Pages {
-	return NewPagesWithPros(&PagesProps{
-		WithCache: false,
-	})
+	return NewPagesWithProps(nil)
+}
+
+type PagesProps struct {
+	Mode Mode
+	WithCache bool
+	Pages string
 }
  
-func NewPagesWithPros(props *PagesProps) *Pages {
+func NewPagesWithProps(props *PagesProps) *Pages {
 	o := &Pages{
 		Mode: ModeDefault,
 		files: map[string][]string{},
+	}
+
+	if props != nil && sys.FilePathValid(props.Pages) {
+		o.Pages = props.Pages
+	}
+
+	if props == nil {
+		props = &PagesProps{
+			Mode: ModeDefault,
+			WithCache: false,
+		}
 	}
 
 	if err := o.Init(props); err != nil {
@@ -126,26 +152,27 @@ func (p *Pages) AddTemplatesFromGroup(group *PageGroup) error {
 	return nil
 }
 
-type PagesProps struct {
-	WithCache bool
-}
+func (p *Pages) Init(props *PagesProps) error {
+	// mode
+	p.Mode = props.Mode
+	log.Printf("Mode %d", p.Mode)
 
-func (r *Pages) Init(props *PagesProps) error {
-	r.WithCache = props.WithCache
+	// cache
+	p.WithCache = props.WithCache
 
-	if r.WithCache {
+	if p.WithCache {
 		log.Printf("Template cache enabled")
 	} else {
 		log.Printf("Template cache disabled")
 	}
 
 	var err error
-	r.notFound, err = template.New("not_found").Parse(`{{define "not_found"}}Page not found{{end}}`)
+	p.notFound, err = template.New("not_found").Parse(`{{define "not_found"}}Page not found{{end}}`)
 	if err != nil {
 		return err
 	}
 
-	r.templates = make(map[string]*template.Template)
+	p.templates = make(map[string]*template.Template)
 
 	return nil
 }
@@ -236,7 +263,7 @@ func (p *Pages) loadTemplate(path string) *template.Template {
 	
 	switch p.Mode {
 	case ModeLocal:
-		log.Println("should load from local", layout, page)
+		root = p.LoadLocal(path, layout, page)
 	case ModeS3:
 		log.Println("should load from s3", layout, page)
 	default:
@@ -251,7 +278,7 @@ func (p *Pages) loadTemplate(path string) *template.Template {
 }
 
 func (p *Pages) LoadDefault(root *template.Template, path string) *template.Template {
-	log.Printf("Load %s", path)
+	log.Printf("Loading %s", path)
 
 	files, ok := p.files[path]
 	if !ok {
@@ -264,6 +291,29 @@ func (p *Pages) LoadDefault(root *template.Template, path string) *template.Temp
 
 	for _, fl := range files {
 		data, err := os.ReadFile(fl)
+		if err != nil {
+			log.Fatalf("failed to load template: %v", err)
+		}
+
+		var errParse error
+		tpl, errParse = tpl.Parse(string(data))
+		if errParse != nil {
+			log.Fatalf("failed to parse template: %v", errParse)
+		}
+	}
+
+	return tpl
+}
+
+func (p *Pages) LoadLocal(path string, filenames... string) *template.Template {
+	log.Printf("Loading %s", path)
+
+	tpl := template.New(path)
+
+	for _, fl := range filenames {
+		fullPath := filepath.Join(p.Pages, fl)
+		log.Printf("-> %s", fullPath)
+		data, err := os.ReadFile(fullPath)
 		if err != nil {
 			log.Fatalf("failed to load template: %v", err)
 		}

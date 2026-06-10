@@ -4,7 +4,7 @@ go 1.26.3
 
 require (
 	git.gsuntres.com/boxtep/boxtep v0.0.0-20260527193841-87010e42a070
-	git.gsuntres.com/gsuntres/pkg v0.0.0-20260604190457-aca106d3783e
+	git.gsuntres.com/gsuntres/pkg v0.0.0-20260610192105-57a193562f41
 	github.com/gin-gonic/gin v1.12.0
 )
 
@@ -39,6 +39,6 @@ require (
 	golang.org/x/crypto v0.52.0 // indirect
 	golang.org/x/net v0.55.0 // indirect
 	golang.org/x/sys v0.45.0 // indirect
-	golang.org/x/text v0.37.0 // indirect
+	golang.org/x/text v0.38.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 )
