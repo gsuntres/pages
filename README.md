@@ -48,3 +48,19 @@ c.HTML(200, "subpath/mypage.html?layout=layout.html")
 By default caching is disabled. Any changes on the templates will show up on the next render.
 
 To enable it, pass WithCache = true to *PagesProps*.
+
+## Helper Functions
+
+Gotemplate's equivalent to locals in express.js is ```template.FuncMap```. *Pages* has the following functions availabe in templates:
+
+* safe: to escape html
+* safeURL: to escape url strings
+* json: to parse data into json
+* jsonPretty: same as json but more redable json
+* ifelse: a convenient one line if else statement.
+
+To add more
+
+```go
+pages.AddFunc(name, func)
+```
