@@ -7,7 +7,7 @@ import (
 )
 
 // Bootstrap configures gin router according to a tree of PageGroups
-// Next step should be to configure gin.Engine renderer using Pages.
+// The next step is to configure gin.Engine renderer using Pages.
 func Bootstrap(r *gin.Engine, group *PageGroup) {
     if group.Index != "" {
         r.GET(group.Path, func(c *gin.Context) {
