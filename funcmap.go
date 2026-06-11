@@ -49,3 +49,27 @@ func safeURL(s any) template.URL {
 
 	return template.URL(v)
 }
+
+
+func callGenerate(p *Pages) (func (name string, args ...any) any) {
+	return func (name string, args ...any) any {
+		fn, exists := p.funcMap[name]
+		if !exists {
+			return ""
+		}
+
+		if len(args) == 0 {
+			if f, ok := fn.(func() string); ok { return f() }
+		}
+
+		if len(args) == 1 {
+			if strArg, ok := args[0].(string); ok {
+				if f, ok := fn.(func(string) string); ok { 
+					return f(strArg) 
+				}
+			}
+		}
+
+		return "Invalid signature"
+	}
+}

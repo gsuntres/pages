@@ -199,6 +199,7 @@ func (p *Pages) Init(props *PagesProps) error {
 	p.AddFunc("json", jsonFunc)
 	p.AddFunc("jsonPretty", jsonPretty)
 	p.AddFunc("ifelse", ifelse)
+	p.AddFunc("call", callGenerate(p))
 
 	return nil
 }
@@ -224,7 +225,7 @@ func (r *Pages) AddTemplate(name string, filenames... string) error {
 		}
 
 		if _, err := root.Parse(string(content)); err != nil {
-			log.Fatalf("Failed to parse template %v", err)
+			log.Fatalf("Failed to parse %v", err)
 
 			continue
 		}
@@ -235,24 +236,24 @@ func (r *Pages) AddTemplate(name string, filenames... string) error {
 	return nil
 }
 
-func (r *Pages) Instance(name string, data any) render.Render {
+func (p *Pages) Instance(name string, data any) render.Render {
 	log.Printf("Render %s with %v", name, data)
 	
 	// render not_found
 	if name == "not_found" {
 		return render.HTML{
-			Template: r.notFound,
+			Template: p.notFound,
 			Name: "not_found",
 			Data: gin.H{},
 		}
 	}
 
 	// load template
-	t := r.loadTemplate(name)
+	t := p.loadTemplate(name)
 
 	if t == nil {
 		return render.HTML{
-			Template: r.notFound,
+			Template: p.notFound,
 			Name: "not_found",
 			Data: gin.H{},
 		}
@@ -289,7 +290,7 @@ func (p *Pages) loadTemplate(path string) *template.Template {
 	
 	switch p.Mode {
 	case ModeLocal:
-		root = p.LoadLocal(path, layout, page)
+		root = p.LoadLocal(root, layout, page)
 	case ModeS3:
 		log.Println("should load from s3", layout, page)
 	default:
@@ -331,11 +332,7 @@ func (p *Pages) LoadDefault(root *template.Template, path string) *template.Temp
 	return tpl
 }
 
-func (p *Pages) LoadLocal(path string, filenames... string) *template.Template {
-	log.Printf("Loading %s", path)
-
-	tpl := template.New(path)
-
+func (p *Pages) LoadLocal(root *template.Template, filenames... string) *template.Template {
 	usable := slices.DeleteFunc(filenames, func(n string) bool {
 		return strings.TrimSpace(n) == ""
 	})
@@ -348,11 +345,11 @@ func (p *Pages) LoadLocal(path string, filenames... string) *template.Template {
 		}
 
 		var errParse error
-		tpl, errParse = tpl.Parse(string(data))
+		root, errParse = root.Parse(string(data))
 		if errParse != nil {
 			log.Fatalf("failed to parse template: %v", errParse)
 		}
 	}
 
-	return tpl
+	return root
 }
