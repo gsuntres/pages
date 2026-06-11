@@ -33,9 +33,9 @@ or
 c.HTML(200, "subpath/mypage.html")
 ```
 
-when paths relative to pages.
+when paths are relative to pages.
 
-To render the page using a layout
+To render pages using a layout
 
 ```go
 c.HTML(200, "subpath/mypage.html?layout=layout.html")

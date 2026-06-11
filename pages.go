@@ -238,7 +238,7 @@ func (r *Pages) AddTemplate(name string, filenames... string) error {
 
 func (p *Pages) Instance(name string, data any) render.Render {
 	log.Printf("Render %s with %v", name, data)
-	
+
 	// render not_found
 	if name == "not_found" {
 		return render.HTML{
@@ -247,7 +247,7 @@ func (p *Pages) Instance(name string, data any) render.Render {
 			Data: gin.H{},
 		}
 	}
-
+	
 	// load template
 	t := p.loadTemplate(name)
 
