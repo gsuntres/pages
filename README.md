@@ -62,5 +62,5 @@ Gotemplate's equivalent to locals in express.js is ```template.FuncMap```. *Page
 To add more
 
 ```go
-pages.AddFunc(name, func)
+instance.AddFunc(name, func)
 ```

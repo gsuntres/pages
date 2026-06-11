@@ -22,6 +22,7 @@ import (
 	"slices"
 	"strings"
 	"net/url"
+	"sync"
 	"html/template"
 	"path/filepath"
 		
@@ -30,6 +31,8 @@ import (
 
 	"git.gsuntres.com/gsuntres/pkg/sys"
 )
+
+var mu sync.RWMutex
 
 var tplhtml map[string]*template.Template
 
@@ -58,6 +61,21 @@ type Pages struct {
 
 	// Pages directory where templates are located (default: pages)
 	Pages string
+	
+	funcMap template.FuncMap
+}
+
+func (p *Pages) AddFunc(name string, fn any) {
+	mu.Lock()
+	defer mu.Unlock()
+	p.funcMap[name] = fn
+}
+
+func (p *Pages) GetFuncMap() template.FuncMap {
+	mu.RLock()
+	defer mu.RUnlock()
+	
+	return p.funcMap
 }
 
 // Count the number templates
@@ -79,6 +97,7 @@ func NewPagesWithProps(props *PagesProps) *Pages {
 	o := &Pages{
 		Mode: ModeDefault,
 		files: map[string][]string{},
+		funcMap: template.FuncMap{},
 	}
 
 	if props != nil && sys.FilePathValid(props.Pages) {
@@ -175,6 +194,12 @@ func (p *Pages) Init(props *PagesProps) error {
 
 	p.templates = make(map[string]*template.Template)
 
+	p.AddFunc("safe", safeHTML)
+	p.AddFunc("safeURL", safeHTML)
+	p.AddFunc("json", jsonFunc)
+	p.AddFunc("jsonPretty", jsonPretty)
+	p.AddFunc("ifelse", ifelse)
+
 	return nil
 }
 
@@ -257,7 +282,7 @@ func (p *Pages) loadTemplate(path string) *template.Template {
 
 	q := fullpath.Query()
 
-	root := template.New(path).Funcs(GetFuncMap())
+	root := template.New(path).Funcs(p.GetFuncMap())
 
 	page := fullpath.Path
 	layout := q.Get("layout")
