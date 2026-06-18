@@ -237,7 +237,7 @@ func (r *Pages) AddTemplate(name string, filenames... string) error {
 }
 
 func (p *Pages) Instance(name string, data any) render.Render {
-	log.Printf("Render %s with %.20v", name, data)
+	log.Printf("Render %s", name)
 
 	// render not_found
 	if name == "not_found" {
