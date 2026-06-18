@@ -58,7 +58,7 @@ Gotemplate's equivalent to locals in express.js is ```template.FuncMap```. *Page
 * json: to parse data into json
 * jsonPretty: same as json but more redable json
 * ifelse: a convenient one line if else statement
-* call: safely calls a function if exists
+* call: safely calls a function if it exists
 
 To add more
 
