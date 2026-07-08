@@ -56,7 +56,7 @@ Gotemplate's equivalent to locals in express.js is ```template.FuncMap```. *Page
 * safe: to escape html
 * safeURL: to escape url strings
 * json: to parse data into json
-* jsonPretty: same as json but more redable json
+* jsonPretty: same as json but outputs a more readable json
 * ifelse: a convenient one line if else statement
 * call: safely calls a function if it exists
 
