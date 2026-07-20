@@ -9,7 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"git.gsuntres.com/gsuntres/pkg/commons"
+	"github.com/gsuntres/pkg/commons"
 )
 
 func setupRouterDefaultMode() *gin.Engine {

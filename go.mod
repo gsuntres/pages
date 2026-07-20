@@ -4,7 +4,7 @@ go 1.26.3
 
 require (
 	git.gsuntres.com/boxtep/boxtep v0.0.0-20260527193841-87010e42a070
-	git.gsuntres.com/gsuntres/pkg v0.0.0-20260610192105-57a193562f41
+	github.com/gsuntres/pkg v0.0.0-20260610192105-57a193562f41
 	github.com/gin-gonic/gin v1.12.0
 )
 

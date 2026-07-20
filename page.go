@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"git.gsuntres.com/gsuntres/pkg/sys"
+	"github.com/gsuntres/pkg/sys"
 )
 
 // Page holds information required to render the final page and route

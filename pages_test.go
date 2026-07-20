@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin/render"
 
-	"git.gsuntres.com/gsuntres/pkg/commons"
+	"github.com/gsuntres/pkg/commons"
 )
 
 func TestNew_Nil(t *testing.T) {
